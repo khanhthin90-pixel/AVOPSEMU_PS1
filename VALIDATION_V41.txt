@@ -1,0 +1,25 @@
+PSLab v41 validation
+74 core suites PASS: GCC C++17 -O2 -Wall -Wextra -Werror -pthread.
+4 suites PASS ASan/UBSan (detect_leaks=0, halt_on_error=1):
+ps2_gs_boot_trace_tests, ps2_gs_mmio_tests, ps2_ipu_boot_tests,
+ps2_register_tests.
+
+Reported LBU 90430000 at 8000D6E0 from BF80146E completes to 8000D6E4.
+Exact final 14 attempted instructions in the uploaded log replay from
+8000D6AC, including GIF reset, GS CSR reset, SYNC and SW zero at 80022618.
+This is a seeded tail replay, not the whole 15813796-instruction BIOS run.
+The narrow 146E response is reset-zero compatibility with unverified device
+semantics; widths/writes/neighbors reject without counter side effects.
+
+GS tests cover model CSR=551B4000, read-only identity, byte/halfword lanes,
+aliases, W1C, IMR, soft-reset VRAM/PCRTC/GIF parser preservation, payload
+continuation and strict alignment/gaps. Cold reset remains separate.
+IPU tests cover CMD/CTRL/BP/TOP initialization, CTRL masks/precision policy,
+BCLR/SETTH synchronous IRQ8, BP and threshold fields, soft reset/read-only
+state, atomic rejection, aliases/widths, and an authored EE startup fixture.
+IPU has no FIFO/DMA/MPEG/image output or bitstream starvation timing.
+
+PS1 GT2 timer-tail regression and keyboard mailbox/SIO tests still PASS.
+PS1 core and keyboard implementation unchanged from v40; UI version updated.
+MSVC/Windows SDK/runtime unavailable: native Windows build/UI untested.
+No Sony BIOS/game images here: actual PS2 BIOS UI and games unconfirmed.

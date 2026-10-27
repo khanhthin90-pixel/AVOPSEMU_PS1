@@ -1,0 +1,28 @@
+PSLab v43 validation
+77 core suites PASS: GCC C++17 -O2 -Wall -Wextra -Werror -pthread.
+After final diagnostic formatting/I/O flush changes, diagnostic_capture_tests
+and cd_raw_tail_tests recompiled and PASS again.
+4 suites PASS ASan/UBSan (detect_leaks=0, halt_on_error=1):
+cd_raw_tail_tests, diagnostic_capture_tests, cd_transfer_tests,
+cpu_pipeline_tests. Repeated after final diagnostic source change.
+
+Negative regression: v42 cdrom.cpp from the previously delivered ZIP,
+compiled against the current diagnostic scaffolding, fails the authored raw
+sector test with 'CD raw tail stalled next INT1' (expected failure).
+v43 receiver passes the exact modeA0, 12-byte header plus 2048-byte DMA
+pattern, leaves280 bytes, delivers next INT1 and preserves old FIFO bytes.
+BFRD accepts next sector; every payload byte and DMA LBA label validated.
+Pending INT1 is not overwritten; existing cadence/protocol tests pass.
+
+An AUTHORED MIPS callback handles a real CD IRQ, clears 801F0066 and lets
+the exact reported four-instruction CPU wait loop exit. The emulator itself
+never forces the byte, skips instructions or fabricates callback execution.
+This is not GT2's callback, nor a full Sony BIOS/game replay.
+
+Watch tests: RAM byte lanes/aliases, CPU instruction attribution, DMA3 source,
+bounded history and side-effect-free diagnostics. Snapshot tests: raw VRAM,
+full-VRAM BMP and selected-frame BMP files produced/read and cleaned up.
+Native Win32 export flow remains untested (no MSVC/Windows SDK/runtime).
+PS1 audio/GPU/input and PS2 regressions retained and passing.
+No BIOS/GT2 disc here: actual GT2 menu/racing and sole-cause diagnosis remain
+unconfirmed. Functional CD buffer model still lacks full HC05/overrun timing.

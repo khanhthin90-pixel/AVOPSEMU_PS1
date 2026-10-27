@@ -1,0 +1,20 @@
+PSLab v40 validation
+71 core suites PASS: GCC C++17 -O2 -Wall -Wextra -Werror -pthread.
+4 suites PASS ASan/UBSan (detect_leaks=0, halt_on_error=1):
+host_pad_tests, keyboard_pad_tests, sio_timing_tests, ps1_gt2_boot_tests.
+
+New coverage: a host Cross down/up before any game poll is retained, then
+actual MIPS MMIO stores issue the digital poll and an LBU/load-delay/store
+sequence writes BF to guest RAM. Next poll observes release. Held Start,
+repeat, focus clearing, packet consistency, absent port/card probes, legacy
+injection and concurrent producer/consumer snapshots also pass.
+No changes to SIO ACK/IRQ timing. Existing PS1 GT2 MMIO and PS2 suites pass.
+
+Input bridge buffers one coalesced press per button until an accepted pad
+poll. This host compatibility policy cannot repair CPU stalls or incomplete
+controller protocol compatibility. A failing game still needs a fresh log.
+
+Win32 edits reviewed: mailbox bound before worker starts; atomic-only UI
+publishing; separate input timer and focus release; version and live masks.
+MSVC/Windows SDK/runtime unavailable: native build/focus/keyboard untested.
+No Sony BIOS or GT2 image here; actual GT2 menu/racing remains unverified.

@@ -1,0 +1,9 @@
+AVOPSEMU v46 — independent project split
+Clean GCC C++17 -O2 -Wall -Wextra -Werror -pthread builds:
+PS1: 49 suites passed; CLI linked using PS1 objects only.
+PS2: 30 suites passed; CLI linked using PS2 objects only.
+PS2 standalone CLI --gpu-demo --steps 1000 exited successfully.
+All local includes and CMake source paths resolve within each project.
+SOURCE_MOVE_MANIFEST verified: 56 of 58 moved files byte-identical; only PS2 window integration changed. Emulator core preserved.
+No CMake executable/MSVC/Windows SDK in validation environment: CMake configure and native Win32 launch/exit were not run.
+No real PS2 BIOS/game validation. Split does not add compatibility.

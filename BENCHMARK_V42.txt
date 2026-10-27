@@ -1,0 +1,28 @@
+v41 run 1
+rect_seconds=1.62904 final=1
+stretch_seconds=0.133508 hash=4167272257208103112
+v42 run 1
+rect_seconds=0.157184 final=1
+stretch_seconds=0.0846163 hash=4167272257208103112
+v41 run 2
+rect_seconds=1.7265 final=1
+stretch_seconds=0.133217 hash=4167272257208103112
+v42 run 2
+rect_seconds=0.165779 final=1
+stretch_seconds=0.0860335 hash=4167272257208103112
+v41 run 3
+rect_seconds=1.63754 final=1
+stretch_seconds=0.137064 hash=4167272257208103112
+v42 run 3
+rect_seconds=0.141422 final=1
+stretch_seconds=0.0974894 hash=4167272257208103112
+
+Median v41 -> v42:
+Opaque rectangle workload: 1.63754 -> 0.157184 s (~10.4x kernel speedup).
+WSOLA 0.54x workload: 0.133508 -> 0.0860335 s (~1.55x kernel speedup).
+Audio output hash identical in every run: 4167272257208103112.
+3 alternating runs, GCC C++17 -O2, same host; timing varies with contention.
+Rectangle workload: 10000 untextured opaque 320x240 draws, no check-mask.
+Audio workload: 2000 stereo 512-frame blocks, synthetic samples, ratio 0.54.
+Source: tools/av_benchmark.cpp. Compiled against core objects before/after.
+NOT BIOS/game FPS, full emulator speedup, MSVC timings or device audio quality.

@@ -1,0 +1,21 @@
+PSLab v44 validation
+78 core suites PASS: GCC C++17 -O2 -Wall -Wextra -Werror -pthread.
+4 suites PASS ASan/UBSan (detect_leaks=0, halt_on_error=1):
+sio_fifo_tests, host_pad_tests, sio_timing_tests, keyboard_pad_tests.
+
+New coverage: eight-byte RX FIFO, last-slot overflow, 16-bit snapshot/pop1,
+32-bit pop4, exact digital FF/41/5A/button replies and Cross=BFFF,
+actual CPU batched TX + LHU/LBU reads, RX thresholds and IRQ reassert,
+forced RX bit auto-clear, reset/abort-phase/history and read-only diagnostics.
+Existing host input regression was corrected to drain queued probe replies
+and read earlier reply bytes before reading the final button byte; its old
+fixture incorrectly depended on overwriting previous reply bytes.
+Existing ACK cadence, mailbox/focus, CD raw-tail/GT2 wait-loop, audio/GPU,
+and PS2 regression suites pass.
+
+The screenshot confirms host Cross recognition but zero completed GTA2 polls.
+No GTA2 executable/BIOS here: no reproduction of its actual port accesses or
+claim that its menu now accepts Cross. New trace is required if still failing.
+Shared SIO changes require real GT2 recheck on Windows despite core passes.
+RX is still immediate and TX/busy timing approximate; ACK cadence retained.
+MSVC/Windows SDK/runtime unavailable: native Windows build/UI/game untested.

@@ -1,0 +1,20 @@
+PSLab v39 validation
+70 suites PASS: GCC C++17 -O2 -Wall -Wextra -Werror -pthread.
+4 suites PASS ASan/UBSan (detect_leaks=0, halt_on_error=1):
+ps1_gt2_boot_tests, timer_tests, ps2_ba0_tests, ps2_cache_tests.
+
+PS1: recorded GT2 final 21 attempted instructions complete the previously
+failing LHU 94C20000 at 80010910, advance to 80010914 and preserve load delay.
+Authored following NOP commits v0=0 at 80010918. Timer1 is seeded with 09B0
+and HBlank clock for this short replay; this is not a complete game run.
+Unused timer-tail 1F801130..13F: 8/16/32-bit reads zero, writes ignored,
+aliases, alignment, neighboring errors, real timer state preserved.
+Zero is a deterministic compatibility policy, not accurate bus garbage.
+
+PS2: BA0 halfword compatibility reads/sinks/aliases/reset/strict guards.
+Exact final nine attempted log instructions replay to 8000D68C and retain
+stack and return address. Does not synthesize GS drawing/IOP readiness.
+
+No MSVC, Windows SDK or Win32 runtime available. Windows build/UI untested.
+No Sony BIOS/game images here: GT2 menu/racing and actual PS2 BIOS UI remain
+unverified. No claim that the PS2 changes caused the reported PS1 failure.

@@ -1,0 +1,28 @@
+PSLab v42 validation
+75 core suites PASS: GCC C++17 -O2 -Wall -Wextra -Werror -pthread.
+4 suites PASS ASan/UBSan (detect_leaks=0, halt_on_error=1):
+ps1_av_update_tests, audio_stretcher_tests, audio_playback_tests,
+gpu_compat_tests.
+
+New AV coverage: 160 independent clipped/offset/masked rectangle reference
+cases; GP1 reset defaults and retained GP1(09); explicit zero H/V ranges,
+continuous blanking without repeated HBlank edges; overflow crossfade
+continuity, silence restart, conceal tail, larger bounded burst tolerance.
+Existing 12-second jitter playback simulation, 15 tone/rate pitch tests,
+unity sample accuracy, GPU raster comparisons and PS1/PS2 regressions pass.
+ASan found a one-frame rounding-capacity error in the new search scratch
+buffer during development; fixed with rounding headroom and a smaller copied
+prefix. All sanitizer suites subsequently pass on the delivered source.
+
+3 alternating kernel benchmark runs, same host, GCC -O2:
+rectangle median 1.63754 -> 0.157184 seconds (~10.4x kernel only);
+WSOLA median 0.133508 -> 0.0860335 seconds (~1.55x kernel only).
+PCM hash remains 4167272257208103112 across both binaries and all runs.
+Full data/method/source in BENCHMARK_V42.txt and tools/av_benchmark.cpp.
+No whole-emulator speedup or game-FPS claim.
+
+User log had 44 underruns/19857 host drops and a GT2 RAM-flag wait loop;
+no full BIOS/game replay was performed, no RAM flag forcibly cleared.
+Startup VSync timeouts and reported graphical/audio defects are not all
+proven fixed by these tests. No Sony BIOS/game images here.
+No MSVC/Windows SDK/Win32 audio runtime: native UI/build/device sound untested.

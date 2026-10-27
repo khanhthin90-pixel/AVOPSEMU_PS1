@@ -1,0 +1,6 @@
+AVOPSEMU v45
+GCC C++17 -O2 -Wall -Wextra -Werror -pthread: ALL 79 SUITES PASSED.
+Includes UI layout bounds test at 1000/1280/1440/1920/2560 by 720/900/1440, with cinema/debug combinations (60 cases).
+Retains v44 SIO and v43 CD-ROM behavior; existing core tests pass.
+No native Win32/MSVC build, runtime rendering, real game or audio device validation available here.
+No sanitizer rerun: changes are UI, layout, branding and diagnostic header; prior v44 sanitizer results are historical only.

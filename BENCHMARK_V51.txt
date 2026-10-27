@@ -1,0 +1,99 @@
+AVOPSEMU PS1 v51 synthetic benchmark
+GCC 13, C++17 -O2, Linux x86_64; 5 alternating before/after pairs, median process CPU time (std::clock).
+Baseline: PS1 v46 source snapshot immediately before v51 edits.
+No commercial BIOS or game, no Windows audio device, no MSVC build.
+
+cpu: 3,000,000 MIPS steps with device ticks
+  old=0.168373s new=0.160859s speed ratio=1.047x; elapsed change=-4.5%
+gpu: 2,000 raw textured 128x128 rectangles
+  old=0.658714s new=0.237275s speed ratio=2.776x; elapsed change=-64.0%
+audio: 1,000 WSOLA fills of 512 stereo frames at tempo 0.54
+  old=0.115666s new=0.057864s speed ratio=1.999x; elapsed change=-50.0%
+
+Checksums match for every pair: ['1000000:4096:5', '2470618884862675407', '6245209366221120937']
+Host scheduling made wall-time measurements unstable, so CPU time is reported.
+These results do not predict game FPS; CPU loop has no active disc transfer.
+Audio workload includes input replenishment and PCM hashing.
+Reproduce current workload: build/run CMake target ps1_v51_benchmark.
+
+Raw measurements:
+{
+  "runs": {
+    "base": [
+      {
+        "cpu": 0.277456,
+        "gpu": 0.744322,
+        "audio": 0.116853
+      },
+      {
+        "cpu": 0.168373,
+        "gpu": 0.521858,
+        "audio": 0.088822
+      },
+      {
+        "cpu": 0.25971,
+        "gpu": 1.15448,
+        "audio": 0.121381
+      },
+      {
+        "cpu": 0.166116,
+        "gpu": 0.658714,
+        "audio": 0.115666
+      },
+      {
+        "cpu": 0.167014,
+        "gpu": 0.563523,
+        "audio": 0.088966
+      }
+    ],
+    "new": [
+      {
+        "cpu": 0.158503,
+        "gpu": 0.222682,
+        "audio": 0.057864
+      },
+      {
+        "cpu": 0.139931,
+        "gpu": 0.199862,
+        "audio": 0.056724
+      },
+      {
+        "cpu": 0.21725,
+        "gpu": 0.349102,
+        "audio": 0.091571
+      },
+      {
+        "cpu": 0.166561,
+        "gpu": 0.237275,
+        "audio": 0.054241
+      },
+      {
+        "cpu": 0.160859,
+        "gpu": 0.308396,
+        "audio": 0.067344
+      }
+    ]
+  },
+  "median_seconds": {
+    "base": {
+      "cpu": 0.168373,
+      "gpu": 0.658714,
+      "audio": 0.115666
+    },
+    "new": {
+      "cpu": 0.160859,
+      "gpu": 0.237275,
+      "audio": 0.057864
+    }
+  },
+  "speedup": {
+    "cpu": 1.04671171647219,
+    "gpu": 2.7761626804340955,
+    "audio": 1.9989285220517077
+  },
+  "checksums": [
+    "1000000:4096:5",
+    "2470618884862675407",
+    "6245209366221120937"
+  ]
+}

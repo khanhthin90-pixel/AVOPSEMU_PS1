@@ -1,0 +1,82 @@
+AVOPSEMU PS1 v51 validation
+
+50/50 PS1 suites passed with GCC C++17 -O2 -Wall -Wextra -Werror -pthread.
+4/4 suites passed with AddressSanitizer + UndefinedBehaviorSanitizer:
+ps1_v51_tests, audio_stretcher_tests, gpu_compat_tests, cpu_pipeline_tests.
+New CPU tests cover TAR/BD/BT, TAR write protection, DCIC writable mask,
+BPC trap/status-only/mismatch/kernel mode gate.
+GPU: 240 full-VRAM equivalence cases against pre-optimization rectangle loop.
+
+Baseline/current WSOLA exact parity: 7 tempo ratios; same PCM hashes,
+remaining input count and WSOLA timeline. Each ratio uses 80 varying output chunks.
+0.25:13317407766698206818:285920:256
+0.54:13570342730799700568:268994:256.36
+0.9999:1811074973585331230:242150:256.082
+1:17399407734537733145:242144:256
+1.0002:2333310424445219755:242134:256.837
+1.5:4376953212380903161:212960:256
+2:10878078446697076036:183776:256
+
+PS2: all 106 packaged files byte-identical to previous PS2 v50 delivery.
+No real BIOS/game or Windows audio-device test; no MSVC/Win32 compilation here.
+No claim of eliminating all crackle or graphics/compatibility defects.
+
+PS1 suite output:
+PASS: short-lock PCM handoff, fade/mute, atomic underrun, early rate estimate, device queue feedback, restart/bounds and half-speed callback continuity
+PASS: adaptive playback interpolation/stereo, ratio consumption, mute, atomic underrun and half-speed continuity
+PASS: WSOLA pitch/energy/tempo at 15 tone-rate pairs, linked stereo, exact unity, atomic short input, partial packets, fade/recovery/trim and 12s jitter simulation
+PASS: actual MIPS A0(2b) missing-kernel regression, valid handlers, route diagnostics, BIOS validation/reset/media retention, direct/BIOS restart and strict bus faults
+PASS: reset-ROM execution, memory/cache control, actual RAM B0 dispatch, TTY, POST, IO aliases/byte lanes, IRQ latches, bus fault address, bounded diagnostics
+PASS: Init first/second response spacing, delayed I_STAT ACK replay, actual MIPS two-IRQ completion
+PASS: CD reset IRQ default, busy lifecycle, unread response ACK drain, queued command, IRQ masking/edges, multi-response and actual MIPS host protocol
+PASS: raw 12+2048-byte DMA leaves280, next INT1/FIFO isolation/LBA and CD interrupt callback releases exact wait loop
+PASS: staged Setloc during streaming, consuming target in Read/Seek/Play, repeated Read preserves FIFO/XA/cadence, Pause status phases and Init/invalid target
+PASS: CD registers/commands/events, BCD validation, IRQ latch, sector read + DMA3, ISO directory/exe execution, GP0 E1/E2 + GP1 state, bounds
+PASS: BFRD restart without sector loss, exact DMA bytes, partial/multi-sector DMA, 1x/2x cadence and reset
+PASS: original CUE PCM/track seek, ATV apply/cross/mono, mute, CDDA cadence, autopause/INT4, end-disc and CD-to-SPU capture/mix
+PASS: COP2 transfers/load delay, LWC2/SWC2, CU2/CE, alignment, commands, reported-PC regression, first-fault retention and BC2 branch delay
+PASS: demo, RAM aliases/endian, branch/load delays, zero register, bus guards
+PASS: HI/LO, multiply/divide edges, overflow, delay-slot exception, alignment, byte load, unaligned pairs, COP0, reserved instruction, arithmetic shift
+PASS: same-register load cancellation, ALU priority, distinct loads, COP0/COP2 pipeline, IRQ drain, full-width DMA stores and alignment exception
+PASS: PS1 user fetch/data permissions, isolated stores, COP0 permissions/RI, LWC0/SWC0, COP2 priority, pending load and delay-slot faults
+PASS: watch CPU/DMA lane/alias/source ring, read-only snapshots and raw VRAM/BMP/framebuffer exports
+PASS: exact BIOS DICR write replay, seven-channel enable matrix, W1C, pending flag persistence, IRQ3 edges/ack, bit31 read-only, actual OTC completion
+PASS: ISO/BIN/CUE modes and multi-file/track/pregaps, ISO SYSTEM.CNF paths, CD commands/raw DMA3/IRQ queue/GetID, digital pad, playable MIPS CD game and BIOS-media restart
+PASS: exact GTA chopped DMA, CPU windows, data/FIFO continuity, BCR/MADR, trigger/busy, DPCR suspension, IRQ gating/completion, cancellation and GPU/SPU bursts
+PASS: recorded GTA LBU opcode, all DMA0..6 register byte/halfword lanes, DPCR/DICR, aliases, load sign/delay and no read side effects
+PASS: retail GPU version/query latching and mirrors, VRAM chip select, opaque color quantization and mask rules
+PASS: 1200 seeded full-VRAM raster comparisons, winding/degenerate/clipping, flat/Gouraud, texture formats/window, raw/blended/dithered, masks
+PASS: GPU packet, fill rounding/wrap, zero height, odd upload/wrap, reset, GPUSTAT subset, CPU GPU demo, GP1 display source/modes/RGB24/blanking, 4:3 fit
+PASS: GTE register semantics, FLAG, sign count, FIFO/color conversion, matrix/vector, clipping/depth, UNR projection, interpolation and lighting golden vectors; 22 documented commands
+PASS: short taps/held/release, guest CPU SIO polling, absent probes, focus/packet snapshot and atomic UI handoff
+PASS: every keyboard mapping, combos/repeat/focus/release physical polling recovery and actual SIO reply diagnostics
+PASS: flat/Gouraud lines, endpoints/degenerate, polyline terminators, clip/offset/mask/blend, parser reset and bounds
+PASS: MIPS reset MMIO, tables/counts/status, incremental RLE/IDCT, mono4/8 and RGB15/24, signed/STP, DMA0/1 gates/backpressure/reordering/DICR and reset cancellation
+PASS: 200000 byte/halfword RAM alias checks, scratch/ROM boundaries, alignment, write protection and MMIO fallbacks
+PASS: recorded GTA DICR store, DMA masks/W1C/mirrors/aliases, SPU byte pins and added status reads
+PASS: 4000 reference IDCT vectors, 300000 timer state/IRQ steps, fast fetch aliases/boundaries, trace, alignment and bus errors
+PASS: hardware/software CPU IRQ masks/vector/EPC/BD/load commit, DMA4/SPU wrap roundtrip/DICR, GPU readback/copy/DMA/info/IRQ, disconnected SIO
+PASS: triangles, winding, quad coverage, clipping, signed offset, mask, degenerate, CPU polygon demo, Gouraud triangle/quad, packet reset/framing
+PASS: GPU reset/zero ranges, 160 reference rectangle cases, audio trim crossfade/silence recovery and burst tolerance
+PASS: GT2 timer-tail MMIO aliases/widths/guards, timer isolation and recorded 21-instruction tail
+PASS: PS1 TAR/BT/DCIC/BPC and 240 textured rectangle equivalence cases
+PASS: worker progress, join, paced restart, exception delivery and locked input/audio snapshots
+PASS: SIO FIFO widths/pop rules, RX IRQ thresholds/reassert, forced RX, overflow, CPU batched poll/Cross reply and abort trace
+PASS: BIOS ACK spacing, pulse/IRQ ack ordering, digital poll bytes, final byte, CS/slot/reset cancellation, keyboard presets/remapping/SOCD
+PASS: ADPCM predictors/sign/fallback, ADSR, 24 voices, KON/KOFF/ENDX/loop, stereo/mute, bounded queue, 768-clock sampling, capture/DMA IRQ9 and DMA status
+PASS: exact BIOS trace replay, SPU aliases/halfword/word, FIFO queue/manual flush, wrap, read-only status, overflow guard
+PASS: OTC trigger, block GPU DMA, DPCR pending start, multi-node list, cycle guard, EXE execution and invalid-file atomic rejection
+PASS: polygon/rectangle families, exact 2C808080, 4/8/15-bit textures, CLUT, raw/modulation, window, wrap, flip, masks, blend, dither, DMA packet split, GPUSTAT/log
+PASS: dot clock, HBlank source/IRQ, sync gates, bounded MIPS timer polling
+PASS: BIOS JAL/SH delay-slot replay, timer registers/aliases, target/overflow flags, IRQ latches, one-shot/toggle, divide8/stop, external clock wait
+AVOPSEMU layout bounds passed
+PASS: 480i/progressive parity, side-effect-free status reads, display-disabled clock, PAL/NTSC fields, VBlank IRQ0/ack/CPU, bounded MIPS polling regression
+PASS: XA 4/8-bit mono/stereo, 37800/18900 rates, predictors/sign/saturation, bounded queue, file/channel filter, interleaved data and mute
+ALL 50 PS1 SUITES PASSED
+
+Sanitizer output:
+PASS: PS1 TAR/BT/DCIC/BPC and 240 textured rectangle equivalence cases
+PASS: WSOLA pitch/energy/tempo at 15 tone-rate pairs, linked stereo, exact unity, atomic short input, partial packets, fade/recovery/trim and 12s jitter simulation
+PASS: retail GPU version/query latching and mirrors, VRAM chip select, opaque color quantization and mask rules
+PASS: same-register load cancellation, ALU priority, distinct loads, COP0/COP2 pipeline, IRQ drain, full-width DMA stores and alignment exception
+ALL 4 SANITIZER SUITES PASSED
