@@ -55,7 +55,7 @@ void AudioStretcher::generate(std::deque<int16_t>& input,double ratio){
  primed=true;ready_offset=0;position+=Hop*ratio;
  // Keep search history, and advance the nominal timeline independently of matching offsets.
  unsigned consumed=position>Search?unsigned(position-Search):0;
- for(unsigned i=0;i<consumed*2;i++)input.pop_front();
+ input.erase(input.begin(),input.begin()+consumed*2);
  position-=consumed;
 }
 bool AudioStretcher::fill(std::deque<int16_t>& input,int16_t* output,unsigned frames,double ratio){

@@ -6,10 +6,11 @@ namespace {int sx(uint32_t n){const int v=n&2047;return(v&1024)?v-2048:v;}}
 void Gpu::render_line(Vertex a,Vertex b,bool semi){
  const int dx=std::abs(b.x-a.x),dy=std::abs(b.y-a.y);if(dx>=1024||dy>=512)return;
  const int n=std::max(dx,dy),step_x=a.x<b.x?1:-1,step_y=a.y<b.y?1:-1;
+ const bool flat=a.color==b.color;
  int x=a.x,y=a.y,error=dx-dy;
  for(int i=0;;i++){
   uint32_t color=a.color;
-  if(n){color=0;for(unsigned shift=0;shift<24;shift+=8)color|=uint32_t(((n-i)*int((a.color>>shift)&255)+i*int((b.color>>shift)&255))/n)<<shift;}
+  if(n&&!flat){color=0;for(unsigned shift=0;shift<24;shift+=8)color|=uint32_t(((n-i)*int((a.color>>shift)&255)+i*int((b.color>>shift)&255))/n)<<shift;}
   if(x>=0&&x<=1023&&y>=0&&y<=511&&x>=left&&x<=right&&y>=top&&y<=bottom)fragment(x,y,color,0,false,false,semi,(draw_mode&0x200)!=0);
   if(x==b.x&&y==b.y)break;
   const int twice=2*error;if(twice>-dy){error-=dy;x+=step_x;}if(twice<dx){error+=dx;y+=step_y;}

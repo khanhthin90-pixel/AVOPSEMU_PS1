@@ -33,29 +33,22 @@ void Bus::tick_timers(){
 }
 
 uint8_t Bus::read8(uint32_t a) const {
-    const uint32_t fast=physical(a);
-    if(fast<0x800000)return ram[fast&0x1fffff];
-    if(fast>=0x1f800000&&fast<0x1f800400)return scratch[fast-0x1f800000];
-    if(fast>=0x1fc00000&&fast<0x1fc80000)return bios[fast-0x1fc00000];
-    if(physical(a)>=0x1f801040&&physical(a)<0x1f801060){auto& port=sio[(physical(a)-0x1f801040)/16];port.clocks=cd.clocks;port.context_pc=writer_cpu?writer_pc:0;return port.read(a&15);}
-    if(physical(a)>=0x1f801800&&physical(a)<=0x1f801803)return cd.read(physical(a)-0x1f801800);
-    // DMA registers are side-effect-free on reads at any supported CPU width.
-    // Route each byte lane through the same register decoder used by LW.
+    // Compute the physical address once for the common RAM / BIOS fetch path.
+    const uint32_t p=physical(a);
+    if(p<0x800000)return ram[p&0x1fffff];
+    if(p>=0x1f800000&&p<0x1f800400)return scratch[p-0x1f800000];
+    if(p>=0x1fc00000&&p<0x1fc80000)return bios[p-0x1fc00000];
+    if(p>=0x1f801040&&p<0x1f801060){auto& port=sio[(p-0x1f801040)/16];port.clocks=cd.clocks;port.context_pc=writer_cpu?writer_pc:0;return port.read(a&15);}
+    if(p>=0x1f801800&&p<=0x1f801803)return cd.read(p-0x1f801800);
+    // Read DMA register lanes using the same decoder as aligned word loads.
     uint32_t dma_value=0;
-    const auto p=physical(a);
-    // Unlocked unused tail after timer 2 (psx-spx, Garbage Locations).
-    // Stable zero is a compatibility policy; actual bus garbage is not modeled.
     if(p>=0x1f801130&&p<0x1f801140)return 0;
     if(p>=0x1f801080&&p<0x1f8010f8&&dma_read(p&~3u,dma_value))return uint8_t(dma_value>>((p&3)*8));
     if(p>=0x1f801c00&&p<0x1f801e80)return uint8_t(spu.read((p-0x1f801c00)&~1u)>>((p&1)*8));
-    if(p==0x1f801814||p==0x1f801815||p==0x1f801816||p==0x1f801817)return uint8_t(gpu.status>>((p&3)*8));
+    if(p>=0x1f801814&&p<0x1f801818)return uint8_t(gpu.status>>((p&3)*8));
     if(p>=0x1f801824&&p<0x1f801828)return uint8_t(mdec.status()>>((p&3)*8));
     uint8_t v=0;if(boot_io_read(a,v))return v;
-    const uint32_t original=a;a=physical(a);
-    if(a<0x800000) return ram[a&0x1fffff];
-    if(a>=0x1f800000 && a<0x1f800400) return scratch[a-0x1f800000];
-    if(a>=0x1fc00000 && a<0x1fc80000) return bios[a-0x1fc00000];
-    throw bus_error("Unsupported bus read",original);
+    throw bus_error("Unsupported bus read",a);
 }
 uint16_t Bus::read16(uint32_t a)const{
  const uint32_t fast=physical(a);
@@ -100,20 +93,17 @@ uint32_t Bus::read32(uint32_t a) const {
     uint32_t v=0; for(unsigned i=0;i<4;i++) v|=uint32_t(read8(a+i))<<(8*i); return v;
 }
 void Bus::write8(uint32_t a,uint8_t v) {
-    const uint32_t fast=physical(a);
-    if(fast>=0x1f801130&&fast<0x1f801140)return;
-    if(fast<0x800000){if((fast&0x1fffff)==watched_byte)watch_ram_write(a,v,1);ram[fast&0x1fffff]=v;return;}
-    if(fast>=0x1f800000&&fast<0x1f800400){scratch[fast-0x1f800000]=v;return;}
-    if(physical(a)>=0x1f801040&&physical(a)<0x1f801060){auto& port=sio[(physical(a)-0x1f801040)/16];port.clocks=cd.clocks;port.context_pc=writer_cpu?writer_pc:0;port.write(a&15,v);return;}
-    if(physical(a)>=0x1f801800&&physical(a)<=0x1f801803){cd.write(physical(a)-0x1f801800,v);return;}
+    const uint32_t p=physical(a);
+    if(p>=0x1f801130&&p<0x1f801140)return;
+    if(p<0x800000){if((p&0x1fffff)==watched_byte)watch_ram_write(a,v,1);ram[p&0x1fffff]=v;return;}
+    if(p>=0x1f800000&&p<0x1f800400){scratch[p-0x1f800000]=v;return;}
+    if(p>=0x1f801040&&p<0x1f801060){auto& port=sio[(p-0x1f801040)/16];port.clocks=cd.clocks;port.context_pc=writer_cpu?writer_pc:0;port.write(a&15,v);return;}
+    if(p>=0x1f801800&&p<=0x1f801803){cd.write(p-0x1f801800,v);return;}
     if(dma_subword_write(a,v,1))return;
-    if(physical(a)>=0x1f801c00&&physical(a)<0x1f801e80){if(!(a&1))spu.write(physical(a)-0x1f801c00,v);return;}
-    if(physical(a)>=0x1f801e80&&physical(a)<0x1f802000)return;
+    if(p>=0x1f801c00&&p<0x1f801e80){if(!(a&1))spu.write(p-0x1f801c00,v);return;}
+    if(p>=0x1f801e80&&p<0x1f802000)return;
     if(boot_io_write(a,v))return;
-    const uint32_t original=a;a=physical(a);
-    if(a<0x800000) {ram[a&0x1fffff]=v;return;}
-    if(a>=0x1f800000 && a<0x1f800400) {scratch[a-0x1f800000]=v;return;}
-    throw bus_error("Unsupported/read-only bus write",original);
+    throw bus_error("Unsupported/read-only bus write",a);
 }
 void Bus::write32(uint32_t a,uint32_t v) {
     const uint32_t p=physical(a);

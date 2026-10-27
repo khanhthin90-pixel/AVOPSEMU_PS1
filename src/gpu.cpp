@@ -115,7 +115,15 @@ void Gpu::gp0(uint32_t word){
  }
  x&=~15u;unsigned w=((packet[2]&1023)+15)&~15u,h=(packet[2]>>16)&511;
  const uint32_t c=packet[0];const uint16_t pixel=uint16_t(((c>>3)&31)|(((c>>11)&31)<<5)|(((c>>19)&31)<<10));
- for(unsigned j=0;j<h;j++)for(unsigned i=0;i<w;i++)vram[((y+j)&511)*1024+((x+i)&1023)]=pixel;
+ // GP0(02) ignores draw-mask flags. Fill each VRAM row in contiguous
+ // spans instead of redoing horizontal wrap arithmetic for every pixel.
+ // The packet width is a multiple of 16 and at most 1024 pixels.
+ for(unsigned j=0;j<h;j++){
+  const auto row=vram.begin()+((y+j)&511)*1024;
+  const unsigned first=std::min(w,1024u-x);
+  std::fill_n(row+x,first,pixel);
+  if(w>first)std::fill_n(row,w-first,pixel);
+ }
 }
 unsigned install_gpu_demo(Bus& bus){
  bus.gpu.reset();unsigned n=0;
